@@ -13,7 +13,7 @@
     @if (_events != null)
     {
         <Virtualize Items="_events" Context="eventItem">
-            <EventCard Event="eventItem"/>
+            <EventCard @bind-Event="eventItem" />
         </Virtualize>
     }
 </div>

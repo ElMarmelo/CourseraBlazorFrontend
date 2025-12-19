@@ -1,17 +1,40 @@
 @using UdemyEventEase.Interfaces
+@using UdemyEventEase.Models
 
 
 
 <div style="display: flex; flex-direction: column; align-items: center; padding: 1rem; border: 1px solid #ccc; background-color: #f3f3f3; border-radius: 1rem; box-shadow: #000 2px 4px ">
-    <h3>@Event?.EventTitle</h3>
+    @if (_isEditing)
+    {
+        <input value="@Event?.EventTitle" @oninput="OnTitleChanged" />
+        <button @onclick="() => _isEditing = false">Save</button>
+    }
+    else
+    {
+        <h3 @onclick="() => _isEditing = true">@Event?.EventTitle</h3>
+    }
+    
     <p>@Event?.EventDate.ToString("dd MMMM yyyy")</p>
     <p>@Event?.Location</p>
+    
     <NavLink href="@($"event-info/{Event?.EventId}")">
-    <button>Go to Event Details</button>
+        <button class="btn btn-info">Go to Event Details</button>
     </NavLink>
 </div>
 
 @code {
+    [Parameter] public EventModel? Event { get; set; }
     
-    [Parameter] public IEventInterface? Event { get; set; }
+    [Parameter] public EventCallback<EventModel> EventChanged { get; set; }
+
+    private bool _isEditing = false;
+
+    private async Task OnTitleChanged(ChangeEventArgs e)
+    {
+        if (Event != null)
+        {
+            Event.EventTitle = e.Value?.ToString() ?? "";
+            await EventChanged.InvokeAsync(Event);
+        }
+    }
 }
