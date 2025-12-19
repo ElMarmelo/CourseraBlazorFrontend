@@ -2,37 +2,45 @@
 @using UdemyEventEase.Models
 @inject UserSessionService SessionService
 
-<h3>Registration</h3>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body p-5">
+                    <h3 class="text-center mb-4">Join Event Ease</h3>
 
-@if (SessionService.CurrentUser != null)
-{
-    <div class="alert alert-success">
-        <h4>Welcome back, @SessionService.CurrentUser.Name!</h4>
-        <p>You are already registered with email: @SessionService.CurrentUser.Email</p>
-        <strong>You can logout by pressing the following button:</strong>
-        <button class="btn btn-warning" @onclick="HandleLogout">Sign out</button>
+                    @if (SessionService.CurrentUser != null)
+                    {
+                        <div class="text-center">
+                            <div class="display-1 text-success mb-3">✓</div>
+                            <h5>Welcome, @SessionService.CurrentUser.Name!</h5>
+                            <p class="text-muted">You're all set with <strong>@SessionService.CurrentUser.Email</strong></p>
+                            <hr />
+                            <button class="btn btn-outline-danger w-100" @onclick="HandleLogout">Sign Out</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <EditForm Model="@user" OnValidSubmit="HandleRegistration">
+                            <DataAnnotationsValidator />
+                            <div class="form-floating mb-3">
+                                <InputText @bind-Value="user.Name" class="form-control" id="name" placeholder="Name" />
+                                <label for="name">Full Name</label>
+                                <ValidationMessage For="@(() => user.Name)" class="text-danger small" />
+                            </div>
+                            <div class="form-floating mb-4">
+                                <InputText @bind-Value="user.Email" class="form-control" id="email" placeholder="Email" />
+                                <label for="email">Email address</label>
+                                <ValidationMessage For="@(() => user.Email)" class="text-danger small" />
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 py-2">Create Account</button>
+                        </EditForm>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
-}
-else
-{
-    <EditForm Model="@user" OnValidSubmit="HandleRegistration">
-        <DataAnnotationsValidator />
-        
-        <div class="mb-3">
-            <label>Name:</label>
-            <InputText @bind-Value="user.Name" class="form-control" />
-            <ValidationMessage For="@(() => user.Name)" />
-        </div>
-
-        <div class="mb-3">
-            <label>Email:</label>
-            <InputText @bind-Value="user.Email" class="form-control" />
-            <ValidationMessage For="@(() => user.Email)" />
-        </div>
-
-        <button type="submit" class="btn btn-primary">Register</button>
-    </EditForm>
-}
+</div>
 
 @code {
     private UserModel user = new();

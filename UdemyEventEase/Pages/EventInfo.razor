@@ -6,48 +6,70 @@
 
 @if (_currentEvent == null)
 {
-    <p><em>Loading event details... or event was not found.</em></p>
+    <div class="container mt-5 text-center">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Loading event details...</p>
+    </div>
 }
 else
 {
-    <NavLink style="text-decoration: none;" href="/"> ← Back to Home</NavLink>
-    <h3>Details for: @_currentEvent.EventTitle</h3>
-    <div style="padding: 1rem; border: 1px solid #ddd; margin-bottom: 1rem;">
-        <p><strong>Location:</strong> @_currentEvent.Location</p>
-        <p><strong>Date:</strong> @_currentEvent.EventDate.ToString("f")</p>
-        <p><strong>Event ID:</strong> @_currentEvent.EventId</p>
+    <div class="container mt-4">
+        <NavLink class="btn btn-link text-decoration-none ps-0 mb-3" href="/">← Back to Events</NavLink>
         
-        <hr />
-        <h5>Attendees (@_currentEvent.Attendees.Count)</h5>
-        @if (_currentEvent.Attendees.Any())
-        {
-            <ul>
-                @foreach (var attendee in _currentEvent.Attendees)
-                {
-                    <li>@attendee</li>
-                }
-            </ul>
-        }
-        else
-        {
-            <p>No one has registered yet. Be the first!</p>
-        }
-
-        @if (SessionService.CurrentUser != null)
-        {
-            @if (_currentEvent.Attendees.Contains(SessionService.CurrentUser.Name))
-            {
-                <button class="btn btn-success" disabled>✓ You are attending</button>
-            }
-            else
-            {
-                <button class="btn btn-primary" @onclick="MarkAsAttending">Attend Event</button>
-            }
-        }
-        else
-        {
-            <p><em>Please <a href="registration">register</a> to attend this event.</em></p>
-        }
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white p-4">
+                <h2 class="mb-0">@_currentEvent.EventTitle</h2>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-7 border-end">
+                        <h5 class="text-uppercase text-muted small fw-bold">Event Details</h5>
+                        <p class="fs-5 mb-2"><i class="bi bi-geo-alt-fill text-danger"></i> @_currentEvent.Location</p>
+                        <p class="fs-5"><i class="bi bi-clock-fill text-primary"></i> @_currentEvent.EventDate.ToString("f")</p>
+                        
+                        <div class="mt-4">
+                            @if (SessionService.CurrentUser != null)
+                            {
+                                @if (_currentEvent.Attendees.Contains(SessionService.CurrentUser.Name))
+                                {
+                                    <div class="alert alert-success d-inline-block">
+                                        <i class="bi bi-check-circle-fill"></i> You're on the list!
+                                    </div>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-primary btn-lg px-5" @onclick="MarkAsAttending">Attend This Event</button>
+                                }
+                            }
+                            else
+                            {
+                                <div class="alert alert-light border">
+                                    Please <a href="registration" class="fw-bold">register</a> to join this event.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-5 ps-md-4">
+                        <h5 class="text-uppercase text-muted small fw-bold mb-3">Attendees (@_currentEvent.Attendees.Count)</h5>
+                        @if (_currentEvent.Attendees.Any())
+                        {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var attendee in _currentEvent.Attendees)
+                                {
+                                    <li class="list-group-item ps-0">
+                                        <i class="bi bi-person-circle me-2"></i> @attendee
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted italic">No attendees yet.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
