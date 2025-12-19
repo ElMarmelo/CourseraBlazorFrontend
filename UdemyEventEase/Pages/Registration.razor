@@ -1,0 +1,54 @@
+@page "/registration"
+@using UdemyEventEase.Models
+@inject UserSessionService SessionService
+
+<h3>Registration</h3>
+
+@if (SessionService.CurrentUser != null)
+{
+    <div class="alert alert-success">
+        <h4>Welcome back, @SessionService.CurrentUser.Name!</h4>
+        <p>You are already registered with email: @SessionService.CurrentUser.Email</p>
+        <strong>You can logout by pressing the following button:</strong>
+        <button class="btn btn-warning" @onclick="HandleLogout">Sign out</button>
+    </div>
+}
+else
+{
+    <EditForm Model="@user" OnValidSubmit="HandleRegistration">
+        <DataAnnotationsValidator />
+        
+        <div class="mb-3">
+            <label>Name:</label>
+            <InputText @bind-Value="user.Name" class="form-control" />
+            <ValidationMessage For="@(() => user.Name)" />
+        </div>
+
+        <div class="mb-3">
+            <label>Email:</label>
+            <InputText @bind-Value="user.Email" class="form-control" />
+            <ValidationMessage For="@(() => user.Email)" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Register</button>
+    </EditForm>
+}
+
+@code {
+    private UserModel user = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SessionService.LoadSession();
+    }
+
+    private async Task HandleRegistration()
+    {
+        await SessionService.RegisterUser(user);
+    }
+
+    private async Task HandleLogout()
+    {
+        await SessionService.Logout();
+    }
+}

@@ -1,0 +1,76 @@
+@page "/event-info/{Id:int}"
+@using UdemyEventEase.Models
+@using UdemyEventEase.Services
+@inject EventService EventService
+@inject UserSessionService SessionService
+
+@if (_currentEvent == null)
+{
+    <p><em>Loading event details... or event was not found.</em></p>
+}
+else
+{
+    <NavLink style="text-decoration: none;" href="/"> ← Back to Home</NavLink>
+    <h3>Details for: @_currentEvent.EventTitle</h3>
+    <div style="padding: 1rem; border: 1px solid #ddd; margin-bottom: 1rem;">
+        <p><strong>Location:</strong> @_currentEvent.Location</p>
+        <p><strong>Date:</strong> @_currentEvent.EventDate.ToString("f")</p>
+        <p><strong>Event ID:</strong> @_currentEvent.EventId</p>
+        
+        <hr />
+        <h5>Attendees (@_currentEvent.Attendees.Count)</h5>
+        @if (_currentEvent.Attendees.Any())
+        {
+            <ul>
+                @foreach (var attendee in _currentEvent.Attendees)
+                {
+                    <li>@attendee</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No one has registered yet. Be the first!</p>
+        }
+
+        @if (SessionService.CurrentUser != null)
+        {
+            @if (_currentEvent.Attendees.Contains(SessionService.CurrentUser.Name))
+            {
+                <button class="btn btn-success" disabled>✓ You are attending</button>
+            }
+            else
+            {
+                <button class="btn btn-primary" @onclick="MarkAsAttending">Attend Event</button>
+            }
+        }
+        else
+        {
+            <p><em>Please <a href="registration">register</a> to attend this event.</em></p>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private EventModel? _currentEvent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _currentEvent = EventService.GetEventById(Id);
+        
+        if (SessionService.CurrentUser == null)
+        {
+            await SessionService.LoadSession();
+        }
+    }
+
+    private void MarkAsAttending()
+    {
+        if (_currentEvent != null && SessionService.CurrentUser != null)
+        {
+            EventService.RegisterAttendance(_currentEvent.EventId, SessionService.CurrentUser.Name);
+
+        }
+    }
+}

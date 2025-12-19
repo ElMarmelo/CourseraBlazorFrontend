@@ -1,0 +1,29 @@
+﻿@page "/"
+@using UdemyEventEase.Components
+@using UdemyEventEase.Models
+@using UdemyEventEase.Services
+@inject EventService EventService
+
+<PageTitle>Event Ease Home</PageTitle>
+
+<h1>Welcome to Event Ease</h1>
+<h4>Here are the currently available events</h4>
+
+<div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+    @if (_events != null)
+    {
+        <Virtualize Items="_events" Context="eventItem">
+            <EventCard Event="eventItem"/>
+        </Virtualize>
+    }
+</div>
+
+@code
+{
+    private List<EventModel>? _events;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _events = EventService.GetEvents();
+    }
+}

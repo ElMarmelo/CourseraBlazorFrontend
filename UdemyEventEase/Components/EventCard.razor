@@ -1,0 +1,17 @@
+@using UdemyEventEase.Interfaces
+
+
+
+<div style="display: flex; flex-direction: column; align-items: center; padding: 1rem; border: 1px solid #ccc; background-color: #f3f3f3; border-radius: 1rem; box-shadow: #000 2px 4px ">
+    <h3>@Event?.EventTitle</h3>
+    <p>@Event?.EventDate.ToString("dd MMMM yyyy")</p>
+    <p>@Event?.Location</p>
+    <NavLink href="@($"event-info/{Event?.EventId}")">
+    <button>Go to Event Details</button>
+    </NavLink>
+</div>
+
+@code {
+    
+    [Parameter] public IEventInterface? Event { get; set; }
+}
